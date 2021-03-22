@@ -1,0 +1,580 @@
+{
+	"info": {
+		"_postman_id": "25cfc70d-c640-4c57-9658-c845be383210",
+		"name": "Tasks",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"item": [
+				{
+					"name": "Create New Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 2XX\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.environment.set(\"taskID\", jsonData.id);\r",
+									"\r",
+									"pm.test(\"Response json has right structure\", function () {\r",
+									"    pm.expect(jsonData.id).to.exist;\r",
+									"    pm.expect(jsonData.project_id).to.exist;\r",
+									"    pm.expect(jsonData.section_id).to.exist;\r",
+									"    pm.expect(jsonData.order).to.exist;\r",
+									"    pm.expect(jsonData.completed).to.exist;\r",
+									"    pm.expect(jsonData.priority).to.exist;\r",
+									"    pm.expect(jsonData.comment_count).to.exist;\r",
+									"    pm.expect(jsonData.url).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"{{taskName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}",
+							"host": [
+								"{{baseURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 with no content\", function () {\r",
+									"    pm.response.to.be.badRequest;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}",
+							"host": [
+								"{{baseURL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get",
+			"item": [
+				{
+					"name": "Get Active Tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 2XX\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Returns {{taskNumber}} tasks\", function () {\r",
+									"    pm.expect(jsonData.length).to.gte(13);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Task object contains id\", function () {\r",
+									"    jsonData.map(task => {\r",
+									"        pm.expect(task.id).to.exist\r",
+									"    })\r",
+									"});\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}",
+							"host": [
+								"{{baseURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Tasks Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 with invalid token\", function () {\r",
+									"    pm.response.to.be.forbidden;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "783f3fa4679817d15e8d59c002dc3608557534",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}",
+							"host": [
+								"{{baseURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an Active Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 2XX\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const jsonData = pm.response.json();\r",
+									"const taskName = pm.environment.get(\"taskName\")\r",
+									"\r",
+									"pm.test(\"Task name is correct\", function(){\r",
+									"    pm.expect(jsonData.content).to.eql(taskName)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/{{taskID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"{{taskID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an Active Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 with invalid Task ID\", function () {\r",
+									"    pm.response.to.be.notFound;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/invalidId",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"invalidId"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update",
+			"item": [
+				{
+					"name": "Update a Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 2XX\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"Edited\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/{{taskID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"{{taskID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 with invalid ID\", function () {\r",
+									"    pm.response.to.be.notFound;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"Edited\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/taskID",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"taskID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete a Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/{{taskID}}/close",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"{{taskID}}",
+								"close"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete a Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 with invalid ID\", function () {\r",
+									"    pm.response.to.be.notFound;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/taskID/close",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"taskID",
+								"close"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reopen a Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/{{taskID}}/reopen",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"{{taskID}}",
+								"reopen"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reopen a Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.be.notFound;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/taskID/reopen",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"taskID",
+								"reopen"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "Delete a Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.be.success;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/{{taskID}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"{{taskID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Task Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.be.notFound;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/taskID",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"taskID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"value": ""
+		}
+	]
+}
